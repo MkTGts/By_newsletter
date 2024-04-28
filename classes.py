@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+import os
 
 
 class Importeds:
@@ -10,12 +11,30 @@ class Importeds:
 
     @staticmethod
     def clear_file(filename: str) -> None:
+        """
+        Статический метод удаляет все содержимое файла
+        """
         f = open(filename, 'w')
         f.close()
 
+    @staticmethod
+    def create_file_date(filename: str) -> datetime:
+        """
+        Статический метод возврщающий дату создания файла
+        Эти данные будут использоваться для указания на какое время актуальна статистика
+        Файл скачан и перенесен в папку, это и есть время создания файла
+        """
+        stat = os.stat(filename)
+        ctime = stat.st_ctime
+        return datetime.fromtimestamp(ctime)
+
     @classmethod
-    # записывает маил и имя в файл и выводит кличество соответствующих
     def writer(cls, file_name: str, rows: list, key: str, col: int, count=0) -> int:
+        """
+        Шаблонный метод, принимает имя файла, список строк, которые будут обрабатываться,
+        ключ по которому нужно будет искать и столбец в котором искать
+        Записывает маил и имя в файл и выводит кличество соответствующих условиям
+        """
         with open(file_name, 'a', encoding='utf-8') as file:
             for row in rows:
                 if row[col] == key:
@@ -24,7 +43,7 @@ class Importeds:
         return count
 
     def status(self) -> int:  # статус (отправлено <-> ошибка)
-        __class__.clear_file('status_ok.txt')
+        __class__.clear_file('status_ok.txt')  # очистка файла от старой инфы
         return self.writer('status_ok.txt', self.rows, key='Отправлено', col=3)
 
     def is_read(self) -> int:  # прочитано или нет
