@@ -1,4 +1,4 @@
-*.txt
-*.csv
-*.xlsx
+file1.csv
+plan.xlsx
 __pycache__
+data/statistics/

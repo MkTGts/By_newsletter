@@ -10,14 +10,6 @@ class Importeds:
             self.rows = list(rows)
 
     @staticmethod
-    def clear_file(filename: str) -> None:
-        """
-        Статический метод удаляет все содержимое файла
-        """
-        f = open(filename, 'w')
-        f.close()
-
-    @staticmethod
     def create_file_date(filename: str) -> datetime:
         """
         Статический метод возврщающий дату создания файла
@@ -35,30 +27,43 @@ class Importeds:
         ключ по которому нужно будет искать и столбец в котором искать
         Записывает маил и имя в файл и выводит кличество соответствующих условиям
         """
-        with open(file_name, 'a', encoding='utf-8') as file:
+        with open(file_name, 'w', encoding='utf-8') as file:
             for row in rows:
                 if row[col] == key:
                     count += 1
-                    file.write(row[1] + ' - ' + row[2] + '\n')
+                    file.write(row[1] + ';' + row[2] + '\n')
         return count
 
+    def create_dir(self) -> str:  # создает папку с названием по дате рассылки
+        dir_name = f'data/statistics/stat_as_{self.is_dates().strftime(
+            '%d%m%y')}'  # достает название папки
+        try:
+            os.mkdir(dir_name)  # создает папку
+        except FileExistsError:
+            pass
+        self.dir_name = dir_name
+        return dir_name  # возвращает название папки
+
     def status(self) -> int:  # статус (отправлено <-> ошибка)
-        __class__.clear_file('status_ok.txt')  # очистка файла от старой инфы
-        return self.writer('status_ok.txt', self.rows, key='Отправлено', col=3)
+        path = f'{self.dir_name}/status_ok.txt'  # путь к файлу
+        return self.writer(path, self.rows, key='Отправлено', col=3)
 
     def is_read(self) -> int:  # прочитано или нет
-        __class__.clear_file('read_ok.txt')
-        return self.writer('read_ok.txt', self.rows, key='Да', col=5)
+        path = f'{self.dir_name}/read_ok.txt'  # путь к файлу
+        return self.writer(path, self.rows, key='Да', col=5)
 
     def click(self) -> int:  # кликнуто по ссылке или нет
-        __class__.clear_file('click_ok.txt')
-        return self.writer('click_ok.txt', self.rows, key='Да', col=6)
+        path = f'{self.dir_name}/click_ok.txt'  # путь к файлу
+        return self.writer(path, self.rows, key='Да', col=6)
 
     def unsub(self) -> int:  # если отписался
-        __class__.clear_file('unsub.txt')
-        return self.writer('unsub.txt', self.rows, key='Да', col=7)
+        path = f'{self.dir_name}/unsub.txt'  # путь к файлу
+        return self.writer(path, self.rows, key='Да', col=7)
 
     def is_dates(self) -> datetime:  # дата рассылки
+        """
+        Дата рассылки. В дальнейшем будет использоваться также как название рассылки
+        """
         s = self.rows[1][4][:10]
         dates = datetime.strptime(s, '%d.%m.%Y')
         return dates

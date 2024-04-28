@@ -2,13 +2,14 @@ from datetime import datetime
 import os
 
 
-def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub: datetime, dates_relevant: datetime) -> str:
+def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub: datetime, dates_relevant: datetime, path: str) -> str:
     """
-    Функиця записывает собранную статистику по рассылке в файл и возвращает название файла в который стат записала
-    Принимает(в очередности подачи): кол-во доставленных, прочитанных, кликов(переходов), отписавшихся,
-    актуальную дата(т.е. когда файл был загружен с Битрикса), дату рассылки
+    Функиця записывает собранную статистику по рассылке в файл и возвращает название файла в который записала стат.
+    Принимает(в очередности подачи): кол-во доставленных; прочитанны; кликов(переходов); отписавшихся;
+    актуальную дата(т.е. когда файл был загружен с Битрикса); дату рассылки(является также именем рассылки); 
+    директория внутри data куда сохраняются данные по этой расслке.
     """
-    filename = 'stat_' + str(dates_unsub.day).zfill(2) + \
+    filename = path + '/stat_' + str(dates_unsub.day).zfill(2) + \
         str(dates_unsub.month).zfill(2) + \
         str(dates_unsub.year)[2:] + '.txt'  # генерация названия файла
 

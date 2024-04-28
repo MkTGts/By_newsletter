@@ -6,6 +6,7 @@ file_name_imported = 'file1.csv'
 
 data = Importeds(file_name_imported)
 
+path = data.create_dir()  # название директории в data
 delivered = data.status()  # кол-во доставленных
 read = data.is_read()  # кол-во прочитанных
 click = data.click()  # кол-во кликов
@@ -16,6 +17,7 @@ dates_relevant = Importeds.create_file_date(
 
 
 # название файла в который записались данные
-fn = write_to_stat(delivered, read, click, unsub, dates_unsub, dates_relevant)
+fn = write_to_stat(delivered, read, click, unsub,
+                   dates_unsub, dates_relevant, path)
 print(f'Данные записаны в файл {fn}')
 s = input()
