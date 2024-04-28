@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import csv
 
 
 def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub: datetime, dates_relevant: datetime, path: str) -> str:
@@ -7,7 +8,7 @@ def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub
     Функиця записывает собранную статистику по рассылке в файл и возвращает название файла в который записала стат.
     Принимает(в очередности подачи): кол-во доставленных; прочитанны; кликов(переходов); отписавшихся;
     актуальную дата(т.е. когда файл был загружен с Битрикса); дату рассылки(является также именем рассылки); 
-    директория внутри data куда сохраняются данные по этой расслке.
+    дату релевантноти рассилки; директория внутри data куда сохраняются данные по этой расслке.
     """
     filename = path + '/stat_' + str(dates_unsub.day).zfill(2) + \
         str(dates_unsub.month).zfill(2) + \
@@ -17,9 +18,36 @@ def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub
         dr = dates_relevant.strftime('%H:%M %d.%m.%Y')
         file.write(f'Рассылка от {dates_unsub.strftime('%d.%m.%Y')}.\n')
         file.write(f'Статистика актуальна на {dr}.\n\n')
-        # file.write(f'Рассылка от {dates_unsub.strftime('%d.%m.%Y')}.\n')
         file.write(f'Было успешно доставлено {delivered} писем.\n')
         file.write(f'Из них прочитано было {read} писем.\n')
         file.write(f'По ссылке перешли {click} человек.\n')
         file.write(f'После этой рассылки, отписались {unsub} человек.\n\n')
+
     return filename  # возвращает название файла
+
+
+def genral_stat(dates_unsub: datetime, dates_relevant: datetime, delivered: int, read: int, click: int, unsub: int) -> None:
+    columns = ['Дата рассылки', 'Дата проверки', 'Успешно доставлено',
+               'Прочитано', 'Переходов', 'Отписок']  # закаловок
+    data = [dates_unsub.strftime(
+        # текущие данные
+        '%d.%m.%Y'), dates_relevant.strftime('%d.%m.%Y %H:%M'), delivered, read, click, unsub]
+
+    # открываем файл для записи текущих данных
+    with open('data/statistics/general_stat.csv', 'a+', encoding='cp1251', newline='') as file:
+        # row = read_column()  # первая строка в файле для проверки, что заголовок есть в файле
+        wrt = csv.writer(file, delimiter=';',
+                         quoting=csv.QUOTE_STRINGS)  # под запись
+        if read_column():
+            wrt.writerow(columns)
+        wrt.writerow(data)
+
+
+def read_column() -> bool:  # функция возвращает первую строку и файла для проверки на пустоту
+    with open('data/statistics/general_stat.csv', 'r', encoding='utf-8') as file:
+        row = csv.reader(file)
+        try:
+            next(row)
+            return False
+        except:
+            return True
