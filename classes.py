@@ -70,6 +70,11 @@ class Importeds:
         return dates
     
     def domains(self) -> dict:  # записывает статистику используемых доменов
+        '''
+        Собирает статистику по количеству используемых доменов почтовых адресов
+        Список рассматриваемых доменов записывается здесь внутри 
+        Данные берет из csv файла
+        '''
         domains_dict = {}  # под словарь доменов
         domains_list = ['@mail.ru', '@yandex.ru', '@ya.ru', '@gmail.com', '@icloud.com']  # список доменов
         for mail in self.rows[1:]:  # идет по файлу рассылки
@@ -85,10 +90,33 @@ class Importeds:
             file.writelines(wrtr)  # записывает 
 
         return domains_dict  # возвращает словарь статистики доменов
+    
+    def names_stat(self):
+        names_dict = {}  # словарь под имена
+        for i in self.rows[1:]:  # итерация по данным из файла
+            name = i[2]  # выберает только имя
+            names_dict[name] = names_dict.get(name, 0) + 1  # плюсует имя к словарю
+
+        s = sorted(names_dict, key=lambda x: names_dict[x], reverse=True)  # сортирует по убыванию
+
+        with open('data/names_stat.txt', 'w', encoding='utf-8') as file:  # запись в файл
+            wrtr = [f'Имя {j} встречается {names_dict[j]} раз.\n' for j in s]
+            file.writelines(wrtr)
+        
+        return names_dict
+    
+        
+
+        
 
 
-s = Importeds('data/imported/file1.csv')
-print(s.domains())
+x = Importeds('data/imported/file1.csv')
+print(x.names_stat())
+
+
+
+
+
             
 
 

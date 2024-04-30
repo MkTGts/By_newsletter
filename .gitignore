@@ -3,3 +3,4 @@ __pycache__
 data/statistics/
 data/imported/*.csv
 data/domain_stat.txt
+data/names_stat.txt
