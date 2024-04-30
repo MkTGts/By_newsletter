@@ -2,3 +2,4 @@ plan.xlsx
 __pycache__
 data/statistics/
 data/imported/*.csv
+data/domain_stat.txt

@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 import os
+import re
 
 
 class Importeds:
@@ -67,3 +68,29 @@ class Importeds:
         s = self.rows[1][4][:10]
         dates = datetime.strptime(s, '%d.%m.%Y')
         return dates
+    
+    def domains(self) -> dict:  # записывает статистику используемых доменов
+        domains_dict = {}  # под словарь доменов
+        domains_list = ['@mail.ru', '@yandex.ru', '@ya.ru', '@gmail.com', '@icloud.com']  # список доменов
+        for mail in self.rows[1:]:  # идет по файлу рассылки
+            mail = mail[1]  # выбирает из только адреса
+            se = mail.index('@')  # находит индекс символа @ 
+            if mail[se:] in domains_list:  # если домен есть списке доменов
+                domains_dict[mail[se+1:]] = domains_dict.get(mail[se+1:], 0) + 1  # то сохраняет в словарь и считает
+            else:  # если нет
+                domains_dict['other'] = domains_dict.get('other', 0) + 1  # то считает как other
+        lst1 = sorted(domains_dict, key=lambda x: domains_dict[x], reverse=True)  # сортирует по убыванию тмпользования адресов
+        with open('data/domain_stat.txt', 'w', encoding='utf-8') as file: # открыввает файл для записи статистики доменов
+            wrtr = [f'адресов с доменом {j} - {domains_dict[j]}шт.\n' for j in lst1]  
+            file.writelines(wrtr)  # записывает 
+
+        return domains_dict  # возвращает словарь статистики доменов
+
+
+s = Importeds('data/imported/file1.csv')
+print(s.domains())
+            
+
+
+
+
