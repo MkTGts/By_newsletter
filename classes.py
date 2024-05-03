@@ -30,7 +30,9 @@ class Importeds:
         """
         with open(file_name, 'w', encoding='utf-8') as file:
             for row in rows:
-                if row[col] == key:
+                if key and row[col] != key:  # если ключ не False и элемент по ключу не равен ключу, то пропускаем
+                    continue
+                else:  # если норм записываем
                     count += 1
                     file.write(row[1] + ';' + row[2] + '\n')
         return count
@@ -46,20 +48,31 @@ class Importeds:
         return dir_name  # возвращает название папки
 
     def status(self) -> int:  # статус (отправлено <-> ошибка)
-        path = f'{self.dir_name}/status_ok.txt'  # путь к файлу
-        return self.writer(path, self.rows, key='Отправлено', col=3)
+        pat = f'{self.dir_name}/status_ok.txt'  # путь к файлу
+        return self.writer(pat, self.rows, key='Отправлено', col=3)
 
     def is_read(self) -> int:  # прочитано или нет
-        path = f'{self.dir_name}/read_ok.txt'  # путь к файлу
-        return self.writer(path, self.rows, key='Да', col=5)
+        pat = f'{self.dir_name}/read_ok.txt'  # путь к файлу
+        return self.writer(pat, self.rows, key='Да', col=5)
 
     def click(self) -> int:  # кликнуто по ссылке или нет
-        path = f'{self.dir_name}/click_ok.txt'  # путь к файлу
-        return self.writer(path, self.rows, key='Да', col=6)
+        pat = f'{self.dir_name}/click_ok.txt'  # путь к файлу
+        return self.writer(pat, self.rows, key='Да', col=6)
 
     def unsub(self) -> int:  # если отписался
-        path = f'{self.dir_name}/unsub.txt'  # путь к файлу
-        return self.writer(path, self.rows, key='Да', col=7)
+        pat = f'{self.dir_name}/unsub.txt'  # путь к файлу
+        return self.writer(pat, self.rows, key='Да', col=7)
+    
+    def all_addr(self) -> int:  # все адреса которые участвовали в рассылке
+        pat = f'{self.dir_name}/all_addr.txt'  # путь к файлу
+        return self.writer(pat, self.rows, key=False, col=1)
+    
+    def err_adr(self) -> int:  # с ошибкой
+        pat = f'{self.dir_name}/err_addr.txt'
+        return self.writer(pat, self.rows, key='С ошибками', col=3)
+    
+
+
 
     def is_dates(self) -> datetime:  # дата рассылки
         """
@@ -111,7 +124,7 @@ class Importeds:
 
 
 x = Importeds('data/imported/file1.csv')
-print(x.names_stat())
+#print(x.names_stat())
 
 
 

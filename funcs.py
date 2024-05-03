@@ -3,7 +3,7 @@ import os
 import csv
 
 
-def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub: datetime, dates_relevant: datetime, path: str) -> str:
+def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub: datetime, dates_relevant: datetime, path: str, all_ad: int, err: int) -> str:
     """
     Функиця записывает собранную статистику по рассылке в файл и возвращает название файла в который записала стат.
     Принимает(в очередности подачи): кол-во доставленных; прочитанны; кликов(переходов); отписавшихся;
@@ -18,7 +18,9 @@ def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub
         dr = dates_relevant.strftime('%H:%M %d.%m.%Y')
         file.write(f'Рассылка от {dates_unsub.strftime('%d.%m.%Y')}.\n')
         file.write(f'Статистика актуальна на {dr}.\n\n')
+        file.write(f'Всего было отправлено {all_ad} писем.\n')
         file.write(f'Было успешно доставлено {delivered} писем.\n')
+        file.write(f'Возникла ошибка при отправлении {err} писем.\n')
         file.write(f'Из них прочитано было {read} писем.\n')
         file.write(f'По ссылке перешли {click} человек.\n')
         file.write(f'После этой рассылки, отписались {unsub} человек.\n\n')
@@ -26,12 +28,12 @@ def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub
     return filename  # возвращает название файла
 
 
-def genral_stat(dates_unsub: datetime, dates_relevant: datetime, delivered: int, read: int, click: int, unsub: int) -> None:
-    columns = ['Дата рассылки', 'Дата проверки', 'Успешно доставлено',
-               'Прочитано', 'Переходов', 'Отписок']  # закаловок
+def genral_stat(dates_unsub: datetime, dates_relevant: datetime, delivered: int, read: int, click: int, unsub: int, all_ad: int, err: int) -> None:
+    columns = ['Дата рассылки', 'Дата проверки','Всего отправлено', 'Успешно доставлено', 'Ошибка при отправлении', 
+               'Прочитано', 'Переходов', 'Отписок']  # загаловок
     data = [dates_unsub.strftime(
         # текущие данные
-        '%d.%m.%Y'), dates_relevant.strftime('%d.%m.%Y %H:%M'), delivered, read, click, unsub]
+        '%d.%m.%Y'), dates_relevant.strftime('%d.%m.%Y %H:%M'), all_ad, delivered, err, read, click, unsub]
 
     # открываем файл для записи текущих данных
     with open('data/statistics/general_stat.csv', 'a+', encoding='cp1251', newline='') as file:
