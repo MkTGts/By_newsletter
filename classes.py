@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 import os
-import re
+
 
 
 class Importeds:
