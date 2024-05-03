@@ -45,7 +45,7 @@ class Importeds:
         except FileExistsError:
             pass
         self.dir_name = dir_name
-        return dir_name  # возвращает название папки
+        return dir_name  # возвращает название директории
 
     def status(self) -> int:  # статус (отправлено <-> ошибка)
         pat = f'{self.dir_name}/status_ok.txt'  # путь к файлу
@@ -65,8 +65,9 @@ class Importeds:
     
     def all_addr(self) -> int:  # все адреса которые участвовали в рассылке
         pat = f'{self.dir_name}/all_addr.txt'  # путь к файлу
-        return self.writer(pat, self.rows, key=False, col=1)
-    
+        self.all_ad = self.writer(pat, self.rows, key=False, col=1)
+        return self.all_ad
+
     def err_adr(self) -> int:  # с ошибкой
         pat = f'{self.dir_name}/err_addr.txt'
         return self.writer(pat, self.rows, key='С ошибками', col=3)
@@ -83,23 +84,18 @@ class Importeds:
         return dates
     
     def domains(self) -> dict:  # записывает статистику используемых доменов
-        '''
-        Собирает статистику по количеству используемых доменов почтовых адресов
+        '''Собирает статистику по количеству используемых доменов почтовых адресов
         Список рассматриваемых доменов записывается здесь внутри 
-        Данные берет из csv файла
-        '''
+        Данные берет из csv файла'''
         domains_dict = {}  # под словарь доменов
-        domains_list = ['@mail.ru', '@yandex.ru', '@ya.ru', '@gmail.com', '@icloud.com']  # список доменов
         for mail in self.rows[1:]:  # идет по файлу рассылки
             mail = mail[1]  # выбирает из только адреса
-            se = mail.index('@')  # находит индекс символа @ 
-            if mail[se:] in domains_list:  # если домен есть списке доменов
-                domains_dict[mail[se+1:]] = domains_dict.get(mail[se+1:], 0) + 1  # то сохраняет в словарь и считает
-            else:  # если нет
-                domains_dict['other'] = domains_dict.get('other', 0) + 1  # то считает как other
+            se = mail.index('@')  # находит индекс символа @
+            mail = mail[se+1:]
+            domains_dict[mail] = domains_dict.get(mail, 0) + 1
         lst1 = sorted(domains_dict, key=lambda x: domains_dict[x], reverse=True)  # сортирует по убыванию тмпользования адресов
         with open('data/domain_stat.txt', 'w', encoding='utf-8') as file: # открыввает файл для записи статистики доменов
-            wrtr = [f'адресов с доменом {j} - {domains_dict[j]}шт.\n' for j in lst1]  
+            wrtr = [f'адресов с доменом {j} - {domains_dict[j]}шт. это {round((domains_dict[j] * 100) / self.all_ad, 2)}%.\n' for j in lst1]  
             file.writelines(wrtr)  # записывает 
 
         return domains_dict  # возвращает словарь статистики доменов
@@ -113,7 +109,7 @@ class Importeds:
         s = sorted(names_dict, key=lambda x: names_dict[x], reverse=True)  # сортирует по убыванию
 
         with open('data/names_stat.txt', 'w', encoding='utf-8') as file:  # запись в файл
-            wrtr = [f'Имя {j} встречается {names_dict[j]} раз.\n' for j in s]
+            wrtr = [f'Имя {j} встречается {names_dict[j]} раз, это {round((names_dict[j] * 100) / self.all_ad, 2)}%.\n' for j in s]
             file.writelines(wrtr)
         
         return names_dict
@@ -123,8 +119,6 @@ class Importeds:
         
 
 
-x = Importeds('data/imported/file1.csv')
-#print(x.names_stat())
 
 
 

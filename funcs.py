@@ -66,4 +66,6 @@ def percent(num: int, full_num:int) -> int:
 
 
 
+
+
     
