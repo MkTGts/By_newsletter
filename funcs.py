@@ -1,6 +1,7 @@
 from datetime import datetime
-import os
+import json
 import csv
+
 
 
 def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub: datetime, dates_relevant: datetime, path: str, all_ad: int, err: int) -> str:
@@ -13,6 +14,8 @@ def write_to_stat(delivered: int, read: int, click: int, unsub: int, dates_unsub
     filename = path + '/stat_' + str(dates_unsub.day).zfill(2) + \
         str(dates_unsub.month).zfill(2) + \
         str(dates_unsub.year)[2:] + '.txt'  # генерация названия файла
+    
+    
 
     with open(filename, 'w', encoding='utf-8') as file:
         dr = dates_relevant.strftime('%H:%M %d.%m.%Y')
@@ -64,8 +67,21 @@ def percent(num: int, full_num:int) -> int:
     except ZeroDivisionError:
         pass
 
+def errors_addrs_log(errorss):
+    '''Функция записывает адреса, отправление на которые произошло с ошибкой, и подсчитывает их количество.
+       Далее если ошибка отправления будет встречаться более чем 3 раза, адрес будет удаляться из списка релевантных адресов.'''
+    er_dct = {}
+    try:
+        with open('data/statistics/err_adr.json', 'r+', encoding='utf-8') as file1:
+            er_dct = json.load(file1)
+    except:
+        with open('data/statistics/err_adr.json', 'w', encoding='utf-8') as file:
+            for i in errorss:
+                er_dct[i] = er_dct.get(i, 0) + 1
+            json.dump(er_dct, file, indent=4)
 
 
+        
 
 
     

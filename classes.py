@@ -23,18 +23,20 @@ class Importeds:
 
     @classmethod
     def writer(cls, file_name: str, rows: list, key: str, col: int, count=0) -> int:
-        """
-        Шаблонный метод, принимает имя файла, список строк, которые будут обрабатываться,
+        """Шаблонный метод, принимает имя файла, список строк, которые будут обрабатываться,
         ключ по которому нужно будет искать и столбец в котором искать
-        Записывает маил и имя в файл и выводит кличество соответствующих условиям
-        """
+        Записывает маил и имя в файл и выводит кличество соответствующих условиям"""
+        __class__.errorss = []
         with open(file_name, 'w', encoding='utf-8') as file:
             for row in rows:
-                if key and row[col] != key:  # если ключ не False и элемент по ключу не равен ключу, то пропускаем
+                if key and row[col] != key:  # если ключ не False и элемент в выбраном столбце не равен ключу, то пропускаем
                     continue
                 else:  # если норм записываем
                     count += 1
                     file.write(row[1] + ';' + row[2] + '\n')
+                    if key == 'С ошибками':
+                        __class__.errorss.append(row[1])
+
         return count
 
     def create_dir(self) -> str:  # создает папку с названием по дате рассылки
@@ -69,8 +71,8 @@ class Importeds:
         return self.all_ad
 
     def err_adr(self) -> int:  # с ошибкой
-        pat = f'{self.dir_name}/err_addr.txt'
-        return self.writer(pat, self.rows, key='С ошибками', col=3)
+        self.pat = f'{self.dir_name}/err_addr.txt'
+        return self.writer(self.pat, self.rows, key='С ошибками', col=3)
     
 
 
@@ -94,7 +96,7 @@ class Importeds:
             mail = mail[se+1:]
             domains_dict[mail] = domains_dict.get(mail, 0) + 1
         lst1 = sorted(domains_dict, key=lambda x: domains_dict[x], reverse=True)  # сортирует по убыванию тмпользования адресов
-        with open('data/domain_stat.txt', 'w', encoding='utf-8') as file: # открыввает файл для записи статистики доменов
+        with open('data/statistics/domain_stat.txt', 'w', encoding='utf-8') as file: # открыввает файл для записи статистики доменов
             wrtr = [f'адресов с доменом {j} - {domains_dict[j]}шт. это {round((domains_dict[j] * 100) / self.all_ad, 2)}%.\n' for j in lst1]  
             file.writelines(wrtr)  # записывает 
 
@@ -108,7 +110,7 @@ class Importeds:
 
         s = sorted(names_dict, key=lambda x: names_dict[x], reverse=True)  # сортирует по убыванию
 
-        with open('data/names_stat.txt', 'w', encoding='utf-8') as file:  # запись в файл
+        with open('data/statistics/names_stat.txt', 'w', encoding='utf-8') as file:  # запись в файл
             wrtr = [f'Имя {j} встречается {names_dict[j]} раз, это {round((names_dict[j] * 100) / self.all_ad, 2)}%.\n' for j in s]
             file.writelines(wrtr)
         
