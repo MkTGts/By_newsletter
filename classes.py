@@ -67,16 +67,13 @@ class Importeds:
     
     def all_addr(self) -> int:  # все адреса которые участвовали в рассылке
         pat = f'{self.dir_name}/all_addr.txt'  # путь к файлу
-        self.all_ad = self.writer(pat, self.rows, key=False, col=1)
+        self.all_ad = self.writer(pat, self.rows[1:], key=False, col=1)
         return self.all_ad
 
     def err_adr(self) -> int:  # с ошибкой
         self.pat = f'{self.dir_name}/err_addr.txt'
         return self.writer(self.pat, self.rows, key='С ошибками', col=3)
     
-
-
-
     def is_dates(self) -> datetime:  # дата рассылки
         """
         Дата рассылки. В дальнейшем будет использоваться также как название рассылки

@@ -4,3 +4,6 @@ data/statistics/
 data/imported/*.csv
 data/domain_stat.txt
 data/names_stat.txt
+test.db
+data/relev_addr.txt
+

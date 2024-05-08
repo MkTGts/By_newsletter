@@ -67,21 +67,33 @@ def percent(num: int, full_num:int) -> int:
     except ZeroDivisionError:
         pass
 
-def errors_addrs_log(errorss):
-    '''Функция записывает адреса, отправление на которые произошло с ошибкой, и подсчитывает их количество.
-       Далее если ошибка отправления будет встречаться более чем 3 раза, адрес будет удаляться из списка релевантных адресов.'''
-    er_dct = {}
-    try:
-        with open('data/statistics/err_adr.json', 'r+', encoding='utf-8') as file1:
-            er_dct = json.load(file1)
-    except:
-        with open('data/statistics/err_adr.json', 'w', encoding='utf-8') as file:
-            for i in errorss:
-                er_dct[i] = er_dct.get(i, 0) + 1
-            json.dump(er_dct, file, indent=4)
+
+def rev_addrs(fn: str) -> None:
+    '''Функиця записывает релевантные адреса для следующей рассылки, за исключением отписавшихся.'''
+    res = []
+    fn = fn.split('/')[:-1]
+    full_addr_dir = '/'.join(fn) + '/all_addr.txt'  # преобразует путь к файлу где лежат все адреса
+    error_addr_dir = '/'.join(fn) + '/unsub.txt'  # преобразует путь к файлу где лежат адреса с отписками
+
+    with open(full_addr_dir, 'r', encoding='utf-8') as file:  # достает все адреса
+        addr_ok = [i.strip() for i in file.readlines()]
+ 
+    with open(error_addr_dir, 'r', encoding='utf-8') as  file1:  # достает адреса с ошибкой
+        addr_err = [j.strip() for j in file1.readlines()]
+
+    for i in addr_ok:  # итерация по всем адресам
+        if i in addr_err:  # если адрес присутсвует в списке адрнесов с ошибками
+            del addr_ok[addr_ok.index(i)]  # то этот адрес удаляется из списка
+
+    with open('data/relev_addr.txt', 'w', encoding='utf-8') as file2:  # открывает файл с релевантными адресами
+        for addr in addr_ok:
+            file2.write(addr + '\n')  # записывает адрес не отписавшегося
+
+    return f'Создан список релевантных адресов. Отписались {len(addr_err)}.'
 
 
-        
+    
+    
 
 
     
